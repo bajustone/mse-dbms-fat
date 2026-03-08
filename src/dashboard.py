@@ -1603,6 +1603,13 @@ def main():
     users_df = prepare_users_df(users)
     sessions_df = prepare_sessions_df(sessions)
 
+    # Pre-warm Spark analytics cache (non-blocking for first visit)
+    if _spark_available():
+        try:
+            _run_spark_analytics()
+        except Exception:
+            pass  # Will show error when user visits the page
+
     # Sidebar
     st.sidebar.title("E-Commerce Analytics")
     st.sidebar.caption(f"Products/Users/Transactions: **{source}**")
