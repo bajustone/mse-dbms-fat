@@ -3,7 +3,6 @@
 
 services:
   hbase:
-    platform: []          # clear amd64 override (native x86_64 on WSL)
     healthcheck:
       start_period: 120s
       interval: 20s
