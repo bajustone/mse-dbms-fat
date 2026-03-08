@@ -179,7 +179,7 @@ def inject_custom_css():
 # Data loading (cached)
 # ---------------------------------------------------------------------------
 
-@st.cache_data(ttl=300)
+@st.cache_data
 def load_data():
     """Load data from MongoDB with JSON fallback."""
     try:
@@ -1405,7 +1405,7 @@ def _get_spark():
     )
 
 
-@st.cache_data(ttl=300, show_spinner="Running Spark analytics...")
+@st.cache_data(show_spinner="Running Spark analytics...")
 def _run_spark_analytics():
     """Run all Spark analytics and cache results for 5 minutes."""
     import sys
