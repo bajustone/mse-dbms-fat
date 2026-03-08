@@ -1693,7 +1693,7 @@ def main():
     st.sidebar.markdown(f"- {len(categories)} categories")
 
     st.sidebar.markdown("---")
-    st.sidebar.markdown("**Bahati Justin** | ULK MSE Final Project")
+    st.sidebar.markdown("**Bahati Justin** | ULK MSE Advanced DB Design and Implementation project")
 
     if page == "Overview":
         page_overview(txn_df, users_df, sessions_df, transactions)
