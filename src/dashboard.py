@@ -29,7 +29,7 @@ HBASE_HOST = os.environ.get("HBASE_HOST", "localhost")
 HBASE_PORT = int(os.environ.get("HBASE_PORT", "9090"))
 
 st.set_page_config(
-    page_title="E-Commerce Analytics Dashboard",
+    page_title="E-Commerce Analytics | Bahati Justin",
     page_icon="📊",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -165,6 +165,11 @@ def inject_custom_css():
 
     hr {
         border-color: var(--card-border) !important;
+    }
+
+    /* Hide Streamlit deploy button */
+    [data-testid="stToolbar"] {
+        display: none !important;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -503,6 +508,7 @@ def compute_page_sequences(sessions):
 
 def page_overview(txn_df, users_df, sessions_df, transactions):
     st.header("Overview")
+    st.caption("Data sources: MongoDB (products, users, transactions) + HBase (sessions)")
 
     if txn_df.empty:
         st.warning("No transaction data matches the selected filters.")
@@ -664,6 +670,7 @@ def page_overview(txn_df, users_df, sessions_df, transactions):
 
 def page_customers(users_df, txn_df, sessions_df):
     st.header("Customer Analytics")
+    st.caption("Data sources: MongoDB (users, transactions) + HBase (sessions)")
 
     # Segmentation
     def classify(row):
@@ -807,6 +814,7 @@ def page_customers(users_df, txn_df, sessions_df):
 
 def page_products(txn_df, prod_info, products, categories):
     st.header("Product Analytics")
+    st.caption("Data sources: MongoDB (products, transactions)")
 
     if txn_df.empty:
         st.warning("No transaction data matches the selected filters.")
@@ -921,6 +929,7 @@ def page_products(txn_df, prod_info, products, categories):
 
 def page_sessions(sessions_df, sessions_raw):
     st.header("Session & Conversion Analytics")
+    st.caption("Data sources: HBase (sessions)")
 
     # Inline filters
     fc1, fc2 = st.columns(2)
@@ -1111,6 +1120,7 @@ def page_sessions(sessions_df, sessions_raw):
 
 def page_page_views(sessions_raw):
     st.header("Page View Analytics")
+    st.caption("Data sources: HBase (session page views)")
 
     pv_df = prepare_page_views_df(sessions_raw)
 
@@ -1213,6 +1223,7 @@ def page_page_views(sessions_raw):
 
 def page_cart_orders(txn_df, sessions_raw, prod_info):
     st.header("Cart & Order Analytics")
+    st.caption("Data sources: MongoDB (transactions) + HBase (session cart data)")
 
     # Inline filter: Order Status
     if "status" in txn_df.columns:
@@ -1425,6 +1436,7 @@ def _run_spark_analytics():
 def page_spark():
     """Spark Analytics page — runs Spark jobs on-demand and displays results."""
     st.header("Spark Analytics")
+    st.caption("Data sources: Apache Spark (batch processing on all datasets)")
 
     if not _spark_available():
         st.error("Spark is not available. Ensure PySpark and Java are installed.")
@@ -1679,6 +1691,9 @@ def main():
     st.sidebar.markdown(f"- {len(transactions):,} transactions ({len(txn_df):,} rows filtered)")
     st.sidebar.markdown(f"- {len(sessions):,} sessions ({len(sessions_filtered):,} filtered)")
     st.sidebar.markdown(f"- {len(categories)} categories")
+
+    st.sidebar.markdown("---")
+    st.sidebar.markdown("**Bahati Justin** | ULK MSE Final Project")
 
     if page == "Overview":
         page_overview(txn_df, users_df, sessions_df, transactions)
