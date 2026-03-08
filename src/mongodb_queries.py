@@ -11,12 +11,14 @@ Demonstrates non-trivial aggregation pipelines on the document model:
 Usage: python src/mongodb_queries.py
 """
 
+import os
+
 from pymongo import MongoClient
 
 # ---------------------------------------------------------------------------
 # Configuration
 # ---------------------------------------------------------------------------
-MONGO_HOST = "localhost"
+MONGO_HOST = os.environ.get("MONGO_HOST", "localhost")
 MONGO_PORT = 27017
 MONGO_DB = "ecommerce"
 

@@ -34,11 +34,11 @@ from pyspark.sql.types import (
 # ---------------------------------------------------------------------------
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data")
 
-MONGO_HOST = "localhost"
+MONGO_HOST = os.environ.get("MONGO_HOST", "localhost")
 MONGO_PORT = 27017
 MONGO_DB = "ecommerce"
 
-HBASE_HOST = "localhost"
+HBASE_HOST = os.environ.get("HBASE_HOST", "localhost")
 HBASE_PORT = 9090
 
 REVERSE_TS_BASE = 9999999999999

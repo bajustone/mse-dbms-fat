@@ -72,7 +72,7 @@ def load_data() -> dict:
     try:
         from pymongo import MongoClient
 
-        client = MongoClient("localhost", 27017, serverSelectionTimeoutMS=3000)
+        client = MongoClient(os.environ.get("MONGO_HOST", "localhost"), 27017, serverSelectionTimeoutMS=3000)
         client.server_info()  # trigger connection check
         db = client["ecommerce"]
 

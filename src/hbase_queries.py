@@ -10,13 +10,14 @@ Usage: python src/hbase_queries.py
 """
 
 import json
+import os
 
 import happybase
 
 # ---------------------------------------------------------------------------
 # Configuration
 # ---------------------------------------------------------------------------
-HBASE_HOST = "localhost"
+HBASE_HOST = os.environ.get("HBASE_HOST", "localhost")
 HBASE_PORT = 9090
 REVERSE_TS_BASE = 9999999999999
 
