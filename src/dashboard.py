@@ -1397,8 +1397,8 @@ def _get_spark():
     return (
         SparkSession.builder
         .appName("DashboardSpark")
-        .master("local[*]")
-        .config("spark.driver.memory", "2g")
+        .master("local[2]")
+        .config("spark.driver.memory", "512m")
         .config("spark.sql.session.timeZone", "UTC")
         .config("spark.ui.showConsoleProgress", "false")
         .getOrCreate()
@@ -1614,13 +1614,6 @@ def main():
     txn_df = prepare_transactions_df(transactions, prod_info)
     users_df = prepare_users_df(users)
     sessions_df = prepare_sessions_df(sessions)
-
-    # Pre-warm Spark analytics cache (non-blocking for first visit)
-    if _spark_available():
-        try:
-            _run_spark_analytics()
-        except Exception:
-            pass  # Will show error when user visits the page
 
     # Sidebar
     st.sidebar.title("E-Commerce Analytics")
