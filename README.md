@@ -58,6 +58,8 @@ docker compose ps
 
 Once services are running and data is seeded, the dashboard is available at http://localhost:8501.
 
+A live version is hosted at https://dbms-fat.bahatijustin.dev.
+
 ## Project Structure
 
 ```

@@ -1688,6 +1688,8 @@ def main():
     st.sidebar.markdown("---")
     st.sidebar.markdown("**Bahati Justin** | ULK MSE Advanced DB Design and Implementation project")
 
+    st.caption("**Bahati Justin** | ULK MSE — Advanced Database Design and Implementation")
+
     if page == "Overview":
         page_overview(txn_df, users_df, sessions_df, transactions)
     elif page == "Customers":
