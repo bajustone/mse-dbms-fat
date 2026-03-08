@@ -1,0 +1,28 @@
+# WSL/x86_64 override — use with:
+#   docker compose -f docker-compose.yml -f docker-compose.wsl.yml up -d
+
+services:
+  hbase:
+    platform: []          # clear amd64 override (native x86_64 on WSL)
+    healthcheck:
+      start_period: 120s
+      interval: 20s
+      retries: 20
+
+  init:
+    build:
+      context: .
+      dockerfile: Dockerfile.init
+    container_name: ecommerce-init
+    environment:
+      - MONGO_HOST=mongodb
+      - HBASE_HOST=hbase
+    volumes:
+      - ./data:/app/data
+      - ./src:/app/src
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      hbase:
+        condition: service_healthy
+    restart: "no"

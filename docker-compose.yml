@@ -1,0 +1,118 @@
+services:
+  mongodb:
+    image: mongo:7.0
+    container_name: ecommerce-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+      - ./data:/data/import
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+
+  zookeeper:
+    image: zookeeper:3.9
+    container_name: ecommerce-zookeeper
+    ports:
+      - "2181:2181"
+    volumes:
+      - zookeeper_data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "zkServer.sh status"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+
+  hbase:
+    image: dajobe/hbase
+    container_name: ecommerce-hbase
+    platform: linux/amd64
+    ports:
+      - "9090:9090"     # Thrift (happybase)
+      - "9095:9095"     # Thrift UI
+      - "16010:16010"   # Master Web UI
+      - "16020:16020"   # RegionServer
+      - "16030:16030"   # RegionServer Web UI
+    volumes:
+      - hbase_data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c 'echo > /dev/tcp/localhost/9090'"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+    restart: unless-stopped
+
+  spark-master:
+    image: apache/spark:4.0.2-python3
+    container_name: ecommerce-spark-master
+    command: >
+      /opt/spark/bin/spark-class org.apache.spark.deploy.master.Master
+    ports:
+      - "7077:7077"
+      - "8080:8080"
+    volumes:
+      - ./data:/data
+      - ./src:/src
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:8080/ > /dev/null"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    restart: unless-stopped
+
+  spark-worker:
+    image: apache/spark:4.0.2-python3
+    container_name: ecommerce-spark-worker
+    command: >
+      /opt/spark/bin/spark-class org.apache.spark.deploy.worker.Worker
+      spark://spark-master:7077
+    environment:
+      - SPARK_WORKER_MEMORY=2G
+      - SPARK_WORKER_CORES=2
+    ports:
+      - "8081:8081"
+    volumes:
+      - ./data:/data
+      - ./src:/src
+    depends_on:
+      spark-master:
+        condition: service_healthy
+    restart: unless-stopped
+
+  dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile.dashboard
+    container_name: ecommerce-dashboard
+    ports:
+      - "8501:8501"
+    environment:
+      - MONGO_HOST=mongodb
+      - HBASE_HOST=hbase
+      - HBASE_PORT=9090
+    volumes:
+      - ./data:/app/data
+      - ./src:/app/src
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      hbase:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  mongodb_data:
+  zookeeper_data:
+  hbase_data:

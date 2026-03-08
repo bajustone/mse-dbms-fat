@@ -1,0 +1,19 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install Java (required by PySpark)
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends openjdk-21-jre-headless && \
+    rm -rf /var/lib/apt/lists/*
+RUN ln -s /usr/lib/jvm/java-21-openjdk-* /usr/lib/jvm/java-21
+ENV JAVA_HOME=/usr/lib/jvm/java-21
+
+RUN pip install --no-cache-dir streamlit plotly pandas pymongo happybase pyspark==4.0.2
+
+COPY src/ /app/src/
+COPY data/ /app/data/
+
+EXPOSE 8501
+
+ENTRYPOINT ["streamlit", "run", "src/dashboard.py", "--server.address", "0.0.0.0", "--server.port", "8501"]

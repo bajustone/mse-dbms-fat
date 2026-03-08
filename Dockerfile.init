@@ -1,0 +1,10 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+RUN pip install --no-cache-dir faker pandas pymongo happybase
+
+COPY src/ /app/src/
+COPY data/ /app/data/
+
+CMD ["sh", "-c", "python src/dataset_generator.py && python src/seed_databases.py"]
