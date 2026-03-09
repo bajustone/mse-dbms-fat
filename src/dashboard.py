@@ -1387,6 +1387,9 @@ def _spark_available():
         return False
 
 
+SPARK_RESULTS_JSON = os.path.join(DATA_DIR, "spark_results.json")
+
+
 @st.cache_resource
 def _get_spark():
     """Get or create a SparkSession (persisted across reruns)."""
@@ -1440,6 +1443,22 @@ def _run_spark_analytics():
         raise e
 
 
+def _save_spark_results(data: dict):
+    """Serialize dict-of-DataFrames to JSON file."""
+    serialized = {k: v.to_dict(orient="records") for k, v in data.items()}
+    with open(SPARK_RESULTS_JSON, "w") as f:
+        json.dump(serialized, f, default=str)
+
+
+def _load_spark_results() -> dict | None:
+    """Load pre-computed Spark results from JSON file, or None if missing."""
+    if not os.path.exists(SPARK_RESULTS_JSON):
+        return None
+    with open(SPARK_RESULTS_JSON) as f:
+        raw = json.load(f)
+    return {k: pd.DataFrame(v) for k, v in raw.items()}
+
+
 def page_spark():
     """Spark Analytics page — runs Spark jobs on-demand and displays results."""
     st.header("Spark Analytics")
@@ -1450,12 +1469,15 @@ def page_spark():
         st.info("Install: `uv pip install pyspark`")
         return
 
-    try:
-        data = _run_spark_analytics()
-    except Exception as e:
-        st.error(f"Spark analytics failed: {e}")
-        st.info("Ensure PySpark and Java are installed and data files exist in `data/`.")
-        return
+    data = _load_spark_results()
+    if data is None:
+        try:
+            data = _run_spark_analytics()
+            _save_spark_results(data)
+        except Exception as e:
+            st.error(f"Spark analytics failed: {e}")
+            st.info("Ensure PySpark and Java are installed and data files exist in `data/`.")
+            return
 
     # ── Section 1: Customer Lifetime Value ──
     st.subheader("Customer Lifetime Value")
@@ -1616,6 +1638,18 @@ def main():
     inject_custom_css()
 
     products, users, transactions, sessions, categories, source, session_source = load_data()
+
+    # Eagerly pre-compute Spark results in background if not cached
+    if _spark_available() and not os.path.exists(SPARK_RESULTS_JSON):
+        import threading
+        def _precompute():
+            try:
+                data = _run_spark_analytics()
+                _save_spark_results(data)
+            except Exception:
+                pass
+        threading.Thread(target=_precompute, daemon=True).start()
+
     prod_info = build_product_map(products, categories)
 
     txn_df = prepare_transactions_df(transactions, prod_info)
@@ -1626,7 +1660,12 @@ def main():
     st.sidebar.title("E-Commerce Analytics")
     st.sidebar.caption(f"Products/Users/Transactions: **{source}**")
     st.sidebar.caption(f"Sessions: **{session_source}**")
-    st.sidebar.caption(f"Spark: **{'Available' if _spark_available() else 'Not configured'}**")
+    spark_ready = _spark_available()
+    st.sidebar.caption(f"Spark: **{'Available' if spark_ready else 'Not configured'}**")
+    if spark_ready and os.path.exists(SPARK_RESULTS_JSON):
+        if st.sidebar.button("Refresh Spark Data"):
+            os.remove(SPARK_RESULTS_JSON)
+            st.rerun()
     st.sidebar.markdown("---")
 
     page = st.sidebar.radio("Navigate", [
