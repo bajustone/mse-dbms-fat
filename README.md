@@ -1,6 +1,7 @@
 # E-Commerce Analytics Platform
 
 Advanced Database Design and Implementation — ULK MSE Final Project.
+Check [Live Dashoard](https://dbms-fat.bahatijustin.dev).
 
 A multi-database analytics system built on synthetic e-commerce data using MongoDB, HBase, and Apache Spark.
 
