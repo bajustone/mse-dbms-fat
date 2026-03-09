@@ -1687,6 +1687,10 @@ def main():
 
     st.sidebar.markdown("---")
     st.sidebar.markdown("**Bahati Justin** | ULK MSE Advanced DB Design and Implementation project")
+    st.sidebar.markdown(
+        "[:material/code: GitHub](https://github.com/bajustone/mse-dbms-fat) · "
+        "[:material/download: Technical Report](https://github.com/bajustone/mse-dbms-fat/blob/main/docs/technical_report.pdf)"
+    )
 
     st.caption("**Bahati Justin** | ULK MSE — Advanced Database Design and Implementation")
 
