@@ -428,8 +428,13 @@ The dashboard runs as a Docker service on port 8501 and is deployed live at http
 
 # References
 
-- MongoDB Documentation: https://www.mongodb.com/docs/
-- Apache HBase Reference Guide: https://hbase.apache.org/book.html
-- Apache Spark Documentation: https://spark.apache.org/docs/latest/
-- happybase Documentation: https://happybase.readthedocs.io/
-- PySpark API Reference: https://spark.apache.org/docs/latest/api/python/
+1. C. Győrödi, R. Győrödi, G. Pecherle, and A. Olah, "A comparative study: MongoDB vs. MySQL," in *Proc. 13th Int. Conf. Engineering of Modern Electric Systems (EMES)*, Oradea, Romania, 2015, pp. 1--6.
+2. A. Lakshman and P. Malik, "Cassandra --- A decentralized structured storage system," *ACM SIGOPS Operating Systems Review*, vol. 44, no. 2, pp. 35--40, 2010. (Foundational wide-column design concepts shared with HBase.)
+3. M. Zaharia, R. S. Xin, P. Wendell, T. Das, M. Armbrust, A. Dave, X. Meng, J. Rosen, S. Venkataraman, M. J. Franklin, A. Ghodsi, J. Gonzalez, S. Shenker, and I. Stoica, "Apache Spark: A unified engine for big data processing," *Communications of the ACM*, vol. 59, no. 11, pp. 56--65, 2016.
+4. E. Brewer, "CAP twelve years later: How the 'rules' have changed," *Computer*, vol. 45, no. 2, pp. 23--29, 2012.
+5. F. Chang, J. Dean, S. Ghemawat, W. C. Hsieh, D. A. Wallach, M. Burrows, T. Chandra, A. Fikes, and R. E. Gruber, "Bigtable: A distributed storage system for structured data," *ACM Trans. Computer Systems*, vol. 26, no. 2, pp. 1--26, 2008. (HBase is modeled after Bigtable.)
+6. P. Fader, B. Hardie, and K. L. Lee, "'Counting your customers' the easy way: An alternative to the Pareto/NBD model," *Marketing Science*, vol. 24, no. 2, pp. 275--284, 2005. (CLV estimation methodology.)
+7. MongoDB, Inc., "MongoDB Manual --- Aggregation Pipeline," 2024. Available: https://www.mongodb.com/docs/manual/core/aggregation-pipeline/
+8. The Apache Software Foundation, "Apache HBase Reference Guide," 2024. Available: https://hbase.apache.org/book.html
+9. The Apache Software Foundation, "PySpark Documentation," 2024. Available: https://spark.apache.org/docs/latest/api/python/
+10. happybase Contributors, "happybase --- A developer-friendly Python library to interact with Apache HBase," 2024. Available: https://happybase.readthedocs.io/
