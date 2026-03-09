@@ -1692,7 +1692,12 @@ def main():
         "[:material/download: Technical Report](https://github.com/bajustone/mse-dbms-fat/blob/main/docs/technical_report.pdf)"
     )
 
-    st.caption("**Bahati Justin** | ULK MSE — Advanced Database Design and Implementation")
+    _top_left, _top_right = st.columns([3, 1])
+    _top_left.caption("**Bahati Justin** | ULK MSE — Advanced Database Design and Implementation")
+    _top_right.markdown(
+        "[:material/code: GitHub](https://github.com/bajustone/mse-dbms-fat) · "
+        "[:material/download: Technical Report](https://github.com/bajustone/mse-dbms-fat/blob/main/docs/technical_report.pdf)",
+    )
 
     if page == "Overview":
         page_overview(txn_df, users_df, sessions_df, transactions)
