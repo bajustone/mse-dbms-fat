@@ -1398,14 +1398,17 @@ def _get_spark():
         SparkSession.builder
         .appName("DashboardSpark")
         .master("local[2]")
-        .config("spark.driver.memory", "512m")
+        .config("spark.driver.memory", "1g")
+        .config("spark.driver.maxResultSize", "512m")
+        .config("spark.sql.autoBroadcastJoinThreshold", "5m")
+        .config("spark.sql.shuffle.partitions", "4")
         .config("spark.sql.session.timeZone", "UTC")
         .config("spark.ui.showConsoleProgress", "false")
         .getOrCreate()
     )
 
 
-@st.cache_data(show_spinner="Running Spark analytics...")
+@st.cache_data(ttl=300, show_spinner="Running Spark analytics...")
 def _run_spark_analytics():
     """Run all Spark analytics and cache results for 5 minutes."""
     import sys
@@ -1413,24 +1416,28 @@ def _run_spark_analytics():
     from spark_processing import load_and_clean, product_recommendations, cohort_analysis, spark_sql_queries
     from analytics_integration import analysis_clv, analysis_funnel
 
-    spark = _get_spark()
-    spark.sparkContext.setLogLevel("WARN")
+    try:
+        spark = _get_spark()
+        spark.sparkContext.setLogLevel("WARN")
 
-    dfs = load_and_clean(spark)
-    recs = product_recommendations(dfs)
-    cohort_spend, cohort_retention = cohort_analysis(dfs)
-    sql_results = spark_sql_queries(dfs)
-    clv_results = analysis_clv(spark)
-    funnel_results = analysis_funnel(spark)
+        dfs = load_and_clean(spark)
+        recs = product_recommendations(dfs)
+        cohort_spend, cohort_retention = cohort_analysis(dfs)
+        sql_results = spark_sql_queries(dfs)
+        clv_results = analysis_clv(spark)
+        funnel_results = analysis_funnel(spark)
 
-    return {
-        "recs": recs,
-        "cohort_spend": cohort_spend,
-        "cohort_retention": cohort_retention,
-        **sql_results,
-        **clv_results,
-        **funnel_results,
-    }
+        return {
+            "recs": recs,
+            "cohort_spend": cohort_spend,
+            "cohort_retention": cohort_retention,
+            **sql_results,
+            **clv_results,
+            **funnel_results,
+        }
+    except Exception as e:
+        st.cache_data.clear()
+        raise e
 
 
 def page_spark():
